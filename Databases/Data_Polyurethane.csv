@@ -1,0 +1,9 @@
+Reaction,Type,Temperature (ºC),Time (h),Ratio,Acid Value,OHnumber,Cleaving agent
+R-4-190-4.5,Polieter,190,4.5,4,3.5,47.7,Succinic_acid
+R-4-190-5.5,Polieter,190,5.5,4,3.4,48.1,Succinic_acid
+R-4-200-4.5,Polieter,200,4.5,4,2.7,51,Succinic_acid
+R-4-200-5.5,Polieter,200,5.5,4,2.6,51.1,Succinic_acid
+R-5-190-4.5,Polieter,190,4.5,5,3.3,49.1,Succinic_acid
+R-5-190-5.5,Polieter,190,5.5,5,3.1,51,Succinic_acid
+R-5-200-4.5,Polieter,200,4.5,5,2.5,53.4,Succinic_acid
+R-5-200-5.5,Polieter,200,5.5,5,2.4,53.6,Succinic_acid
