@@ -31,7 +31,6 @@ Sections:
     - Observed Pareto Analysis
     - Plots
 
-Author: Rafael Serrano
 Author: Rafael Serrano and Dinis Abranches
 Last Edit: 2026-10-23
 """

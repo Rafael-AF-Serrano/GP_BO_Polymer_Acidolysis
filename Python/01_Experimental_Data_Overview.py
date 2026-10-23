@@ -8,8 +8,8 @@ For polyurethane, the figure contains:
     - OH and AV as functions of temperature, reaction time and reactant ratio
 
 For Nylon 6, the figure contains:
-    - A histogram of molecular weight (MW)
-    - MW as a function of temperature, reaction time and reactant ratio
+    - A histogram of molecular weight (Mw)
+    - Mw as a function of temperature, reaction time and reactant ratio
 
 All experimental observations are displayed. Lines connect the mean response
 at each factor level, and the experimentally observed optimum is highlighted.
@@ -219,7 +219,7 @@ fig_Nylon,axes_Nylon=plt.subplots(1,4,figsize=(14,3.4))
 plotHistogram(axes_Nylon[0],MW_Nylon,nBins_Nylon,color_MW,
               MW_Nylon[indexBest_Nylon],
               f'Minimum MW = {MW_Nylon[indexBest_Nylon]:.1f}',
-              'Nylon 6 MW distribution',
+              'Nylon 6 Mw distribution',
               'Molecular weight (g mol$^{-1}$)')
 # Plot temperature data
 plotFactorResponse(axes_Nylon[1],T_Nylon,MW_Nylon,indexBest_Nylon,color_MW,
@@ -232,7 +232,7 @@ plotFactorResponse(axes_Nylon[3],R_Nylon,MW_Nylon,indexBest_Nylon,color_MW,
                    'Polymer to acid ratio')
 for j,factorName in enumerate(['Temperature','Reaction time',
                                'Reactant ratio']):
-    axes_Nylon[j+1].set_title(f'MW vs {factorName.lower()}',weight='bold',
+    axes_Nylon[j+1].set_title(f'Mw vs {factorName.lower()}',weight='bold',
                               fontsize=11)
 # Use one response-axis scale across the Nylon 6 panels
 MW_range=MW_Nylon.max()-MW_Nylon.min()
@@ -317,7 +317,7 @@ print(f'Polyurethane data points: {len(Data_PU)}\n'
       f'{T_PU[indexBest_Y2]:.0f} °C, {t_PU[indexBest_Y2]:.1f} h, '
       f'ratio {R_PU[indexBest_Y2]:.1f}\n')
 print(f'Nylon 6 data points: {len(Data_Nylon)}\n'
-      f'Minimum MW: {MW_Nylon[indexBest_Nylon]:.1f} g mol^-1 at '
+      f'Minimum Mw: {MW_Nylon[indexBest_Nylon]:.1f} g mol^-1 at '
       f'{T_Nylon[indexBest_Nylon]:.0f} °C, '
       f'{t_Nylon[indexBest_Nylon]:.1f} h, '
       f'ratio {R_Nylon[indexBest_Nylon]:.1f}')

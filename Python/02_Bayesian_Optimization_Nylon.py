@@ -19,7 +19,6 @@ Sections:
     - Main Script
     - Plots
 
-Author: Rafael Serrano
 Author: Rafael Serrano and Dinis Abranches
 Last Edit: 2026-10-23
 """
@@ -60,7 +59,7 @@ AF_max_stop=-1 # Negative value disables acquisition-based stopping
 maxIter=100
 
 # Define what property serves as the label
-label='MW' 
+label='Mw' 
 
 # Parameters for feature and label normalization
 featureNorm='Log+bStand' # None,Standardization,MinMax,LogStand,Log+bStand
@@ -364,7 +363,7 @@ line2=ax2.plot(iterations,-full_Target_array[0:],'-s',color='limegreen',
 ax1.set_xlabel('BO Iteration',weight='bold',fontsize=11)
 ax1.set_ylabel('Max. Expected Improvement',weight='bold',fontsize=10,
                color='red')
-ax2.set_ylabel('Molecular Weight',weight='bold',fontsize=10, 
+ax2.set_ylabel('Molecular Weight (g mol$^{-1}$)',weight='bold',fontsize=10,
                color='limegreen')
 ax1.tick_params(axis='y',colors='red')
 ax2.tick_params(axis='y',colors='limegreen')
