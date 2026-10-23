@@ -1,6 +1,6 @@
 # GP_BO_Polymer_Acidolysis
 
-Github repository associated with the manuscript "Gaussian Process-Guided Bayesian Optimization for Data-Efficient Exploration of Polyurethane and Polyamide Acidolysis"
+Github repository associated with the manuscript "Artificial Intelligence for Data-Efficient Resource Recovery: Retrospective Case Studies in Polymer Acidolysis"
 
 # Structure
 
