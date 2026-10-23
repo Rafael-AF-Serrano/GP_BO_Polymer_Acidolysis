@@ -47,7 +47,7 @@ from sklearn import preprocessing
 # =============================================================================
 
 # Path to database folder
-databasesFolderPath=(r'/path/to/Databases')
+databasesFolderPath=(r'C:\Users\Rafael\Documents\GitHub\GP_BO_Polymer_Acidolysis\Databases')
 
 # Gaussian-Process (GP) configuration
 gpConfig={'kernel':'RBF',
@@ -267,6 +267,12 @@ Y_BO=Y_Avail[initial_point,:].reshape(-1,1)
 X_Avail=numpy.delete(X_Avail,initial_point,axis=0)
 Y_Avail=numpy.delete(Y_Avail,initial_point,axis=0)
 
+# Fit the feature scaler once on the complete known candidate set
+X_Domain=numpy.vstack((X_BO,X_Avail))
+if featureNorm is not None:
+    _,skScaler_X=normalize(X_Domain,method=featureNorm)
+else:
+    skScaler_X=None
 # Define standard distribution
 standard=scipy.stats.norm(loc=0,scale=1)
 # Define history containers
@@ -278,14 +284,16 @@ for n in range(maxIter):
         print("Candidate pool exhausted. Stopping optimization.")
         break
     start2=time.time()
-    # Normalize the features
+    # Fit feature scaler on known finite experimental domain
     if featureNorm is not None:
-        X_BO_N,skScaler_X=normalize(X_BO,method=featureNorm)
-        X_Avail_N,_=normalize(X_Avail,method=featureNorm,skScaler=skScaler_X)
+        X_BO_N,_=normalize(X_BO,method=featureNorm,
+                           skScaler=skScaler_X)
+        X_Avail_N,_=normalize(X_Avail,method=featureNorm,
+                              skScaler=skScaler_X)
     else:
         X_BO_N=X_BO
         X_Avail_N=X_Avail
-    # Normalize the labels   
+    # Refit label normalization using the currently acquired observations
     if labelNorm is not None:
         Y_BO_N,skScaler_Y=normalize(Y_BO,method=labelNorm)
     else:
@@ -293,29 +301,29 @@ for n in range(maxIter):
     # Train GP
     model=buildGP(X_BO_N,Y_BO_N,gpConfig=gpConfig)
     model=model.posterior()
-    # Get GP predictions for X_Avail
+    # Get GP predictions for the remaining candidates
     Y_Avail_Pred_N,STD=gpPredict(model,X_Avail_N)
-    # Get best so far 
+    # Get best observed value in the normalized maximization space
     best_N=Y_BO_N.max()
     delta=Y_Avail_Pred_N-best_N
-    # Compute AF
+    # Compute Expected Improvement
     AF=delta*standard.cdf(delta/STD)+STD*standard.pdf(delta/STD)
-    # Compute AF mean and max
+    # Get maximum acquisition value and its candidate index
     AF_max=AF.max()
     index=AF.argmax()
     # Check stopping criterion
     if (AF_max<AF_max_stop and n>0) or n==maxIter:
         print("Stopping criterion met.")
         break
-    # Add new training point to X_BO and Y_BO
+    # Add the selected experimental observation to the BO dataset
     X_BO=numpy.append(X_BO,X_Avail[index,:].reshape(1,-1).copy(),axis=0)
     Y_BO=numpy.append(Y_BO,Y_Avail[index,:].reshape(1,-1).copy(),axis=0)
-    # Delete new training point from X_Train and Y_Train
+    # Remove the acquired observation from the remaining candidate pool
     X_Avail=numpy.delete(X_Avail,index,axis=0)
     Y_Avail=numpy.delete(Y_Avail,index,axis=0)
-    # Get best after adding point to the pool
+    # Get best after adding the observation
     current_best=Y_BO.max()
-    # Format current best for printing 
+    # Convert back to physical molecular weight for printing
     print_best=-current_best
     # Print iteration details
     print('\nIteration #'+str(n+1))
@@ -329,11 +337,11 @@ for n in range(maxIter):
 X_Best=X_BO[Y_BO.argmax(),:].reshape(1,-1)
 Y_Best=-Y_BO.max().reshape(1,1)
 true_global_min=-negative_global_max
-# Check if the maximum was reached
+# Check whether the database minimum was reached
 reached_min=(Y_Best[0,0]<=true_global_min)
 status_str='YES' if reached_min else f'NO (Minimum is {true_global_min})'
 print(f'\nOptimization Complete. \nBest Physical Parameters:\n'
-      f'Temperature: {X_Best[0,0]} °C\n' 
+      f'Temperature: {X_Best[0,0]} °C\n'
       f'Time: {X_Best[0,1]} hours\n'
       f'Ratio: {X_Best[0,2]}\n'
       f'Resulting {label}: {Y_Best[0,0]:.1f} g mol^-1\n'
@@ -343,23 +351,24 @@ print(f'\nOptimization Complete. \nBest Physical Parameters:\n'
 # Plots
 # =============================================================================
 
-# Define the MW history 
+# Define the MW history, including the initial observation
 full_Target_hist=[Y_BO[0,0]]+Target_hist
 # AF is undefined before the loop starts
 full_AF_hist=[numpy.nan]+AF_max_hist
-# Convergence Plot
-fig,ax1=plt.subplots(figsize=(6, 4))
-# Define x-axis cleanly
+# Convergence plot
+fig,ax1=plt.subplots(figsize=(6,4))
+# Define x-axis
 iterations=range(0,len(full_Target_hist))
-# Plot 1: Acquisition Function (Left Axis, Log Scale, Red)
-line1=ax1.plot(iterations,full_AF_hist[0:],'--or',
-                   label='Expected Improvement',linewidth=1.5,markersize=4)
-# Plot 2: Target Property (Right Axis, Linear Scale, Blue)
+# Plot 1: Acquisition function (left axis, red)
+line1=ax1.plot(iterations,full_AF_hist,'--or',
+              label='Expected Improvement',linewidth=1.5,markersize=4)
+# Plot 2: Best observed molecular weight (right axis, green)
 ax2=ax1.twinx()
 full_Target_array=numpy.array(full_Target_hist)
-line2=ax2.plot(iterations,-full_Target_array[0:],'-s',color='limegreen',
+line2=ax2.plot(iterations,-full_Target_array,'-s',color='limegreen',
               label=f'Best Observed {label}',linewidth=1.5,markersize=4)
-# Axis Labels
+
+# Axis labels
 ax1.set_xlabel('BO Iteration',weight='bold',fontsize=11)
 ax1.set_ylabel('Max. Expected Improvement',weight='bold',fontsize=10,
                color='red')
@@ -367,17 +376,17 @@ ax2.set_ylabel('Molecular Weight (g mol$^{-1}$)',weight='bold',fontsize=10,
                color='limegreen')
 ax1.tick_params(axis='y',colors='red')
 ax2.tick_params(axis='y',colors='limegreen')
+# Combined legend
 lines=line1+line2
 labels=[l.get_label() for l in lines]
-ax1.legend(lines,labels,loc='lower center',bbox_to_anchor=(0.5,1.02),ncol=2, 
-           frameon=False)
+ax1.legend(lines,labels,loc='lower center',bbox_to_anchor=(0.5,1.02),
+           ncol=2,frameon=False)
 plt.tight_layout()
 plt.show()
-    
+
 # Print elapsed time in minutes and seconds
 tf=time.time()
 elapsed=tf-ti
 minutes=int(elapsed//60)
 seconds=elapsed%60
 print(f"Time of execution: {minutes} min {seconds:.2f} s")
-

@@ -59,7 +59,8 @@ from sklearn import preprocessing
 # =============================================================================
 
 # Path to database folder
-databasesFolderPath=(r'/path/to/Databases')
+databasesFolderPath=(r'C:\Users\Rafael\Desktop\Polymer_acidolysis\Article'
+                     r'\Databases')
 
 # Gaussian-Process (GP) configuration
 gpConfig={'kernel':'RBF',
@@ -386,7 +387,7 @@ Y_Initial_OH_N,__=normalize(Y_Exp_OH,method=labelNorm)
 Y_Initial_AV_N,__=normalize(Y_Exp_AV,method=labelNorm)
 initial_score=w_OH*Y_Initial_OH_N[:,0]+w_AV*Y_Initial_AV_N[:,0]
 initial_point=numpy.argmin(initial_score)
-# Define initial BO data 
+# Define initial BO data
 X_BO=X_Exp[initial_point,:].reshape(1,-1)
 Y_BO_OH=Y_Exp_OH[initial_point,:].reshape(-1,1)
 Y_BO_AV=Y_Exp_AV[initial_point,:].reshape(-1,1)
@@ -404,24 +405,6 @@ if featureNorm is not None:
     __,skScaler_X=normalize(X_Domain,method=featureNorm)
 else:
     skScaler_X=None
-# Fit fixed response transformations on the initial observation
-if labelNorm is not None:
-    Y_BO_OH_N,skScaler_Y_OH=normalize(Y_BO_OH,method=labelNorm)
-    Y_BO_AV_N,skScaler_Y_AV=normalize(Y_BO_AV,method=labelNorm)
-else:
-    skScaler_Y_OH=None
-    skScaler_Y_AV=None
-# Transform the fixed physical reference with the same response scalers
-if labelNorm is not None:
-    ref_OH_N,__=normalize(
-        numpy.array([[ref_point_physical[0]]]),method=labelNorm,
-        skScaler=skScaler_Y_OH)
-    ref_AV_N,__=normalize(
-        numpy.array([[ref_point_physical[1]]]),method=labelNorm,
-        skScaler=skScaler_Y_AV)
-    ref_point_N=numpy.array([ref_OH_N[0,0],ref_AV_N[0,0]])
-else:
-    ref_point_N=ref_point_physical.copy()
 print(f'Fixed EHVI reference point: OH={ref_point_physical[0]:.3f}, '
       f'AV={-ref_point_physical[1]:.3f}')
 for n in range(maxIter):
@@ -435,13 +418,22 @@ for n in range(maxIter):
     else:
         X_BO_N=X_BO
         X_Exp_N=X_Exp
-    # Normalize Labels (Independent scalers for OH and AV)
+    # Refit response scalers using the currently acquired observations
     if labelNorm is not None:
-        Y_BO_OH_N,__=normalize(Y_BO_OH,method=labelNorm,skScaler=skScaler_Y_OH)
-        Y_BO_AV_N,__=normalize(Y_BO_AV,method=labelNorm,skScaler=skScaler_Y_AV)
+        Y_BO_OH_N,skScaler_Y_OH=normalize(Y_BO_OH,method=labelNorm)
+        Y_BO_AV_N,skScaler_Y_AV=normalize(Y_BO_AV,method=labelNorm)
+        # Transform the fixed physical reference with the current response scalers
+        ref_OH_N,__=normalize(
+            numpy.array([[ref_point_physical[0]]]),method=labelNorm,
+            skScaler=skScaler_Y_OH)
+        ref_AV_N,__=normalize(
+            numpy.array([[ref_point_physical[1]]]),method=labelNorm,
+            skScaler=skScaler_Y_AV)
+        ref_point_N=numpy.array([ref_OH_N[0,0],ref_AV_N[0,0]])
     else:
         Y_BO_OH_N=Y_BO_OH
         Y_BO_AV_N=Y_BO_AV
+        ref_point_N=ref_point_physical.copy()
     # Train separate GPs for OH and AV
     model_OH=buildGP(X_BO_N,Y_BO_OH_N,gpConfig=gpConfig)
     model_AV=buildGP(X_BO_N,Y_BO_AV_N,gpConfig=gpConfig)
@@ -474,7 +466,7 @@ for n in range(maxIter):
     print(f'Iteration #{n+1} | Max EHVI: {EHVI_max:.3e} | '
           f'Best OH: {best_OH_hist[-1]:.3f} | '
           f'Best AV: {best_AV_hist[-1]:.3f}')
-    
+
 # =============================================================================
 # Observed Pareto Analysis
 # =============================================================================
@@ -564,7 +556,7 @@ ax1.set_ylabel('Acid Value (AV) [mg KOH g$^{-1}$]',weight='bold')
 ax1.grid(True,linestyle=':',alpha=0.6)
 leg=ax1.legend(loc='upper right',fontsize=8)
 for handle in leg.legend_handles:
-    handle.set_alpha(1.0)  
+    handle.set_alpha(1.0)
 
 # Convergence plots
 fig,(ax2,ax3)=plt.subplots(1,2,figsize=(12,5))
