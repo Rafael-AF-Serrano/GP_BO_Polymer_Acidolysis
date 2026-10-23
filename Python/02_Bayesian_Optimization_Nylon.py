@@ -246,17 +246,18 @@ def gpPredict(model,X):
     return Y,STD
 
 # =============================================================================
-# Main script
+# Main Script
 # =============================================================================
 
 # Initiate timer
 ti=time.time()
 # Load data
-Data=pandas.read_csv(os.path.join(databasesFolderPath,'Data_Nylon.csv'))
+Data=pandas.read_csv(os.path.join(databasesFolderPath,'Data_Nylon.csv'),
+                     encoding='latin1')
 X_Avail=Data.iloc[:,1:4].to_numpy()
 Y_Avail=-Data.iloc[:,4].to_numpy().reshape(-1,1)
-# Define global maximum
-true_global_max=Y_Avail.max()
+# Define global maximum in the negative space
+negative_global_max=Y_Avail.max()
 # Define initial point (the one with highest Mw)
 initial_point=numpy.argmin(Y_Avail)
 # Define intial BO data point
@@ -326,18 +327,17 @@ for n in range(maxIter):
 
 # Get best hit
 X_Best=X_BO[Y_BO.argmax(),:].reshape(1,-1)
-Y_Best=Y_BO.max().reshape(1,1)
-true_global_max=-true_global_max
+Y_Best=-Y_BO.max().reshape(1,1)
+true_global_min=-negative_global_max
 # Check if the maximum was reached
-reached_max=(-Y_BO.max()>=true_global_max)
-status_str='YES' if reached_max else f'NO (Maximum is {true_global_max})'
-status_str='YES' if reached_max else f'NO (Maximum is {true_global_max})'
+reached_min=(Y_Best[0,0]<=true_global_min)
+status_str='YES' if reached_min else f'NO (Minimum is {true_global_min})'
 print(f'\nOptimization Complete. \nBest Physical Parameters:\n'
       f'Temperature: {X_Best[0,0]} °C\n' 
       f'Time: {X_Best[0,1]} hours\n'
       f'Ratio: {X_Best[0,2]}\n'
-      f'Resulting {label}: {Y_Best[0]}\n'
-      f'Reached Global Maximum: {status_str}')
+      f'Resulting {label}: {Y_Best[0,0]:.1f} g mol^-1\n'
+      f'Reached Global Minimum: {status_str}')
 
 # =============================================================================
 # Plots
@@ -358,12 +358,12 @@ line1=ax1.plot(iterations,full_AF_hist[0:],'--or',
 ax2=ax1.twinx()
 full_Target_array=numpy.array(full_Target_hist)
 line2=ax2.plot(iterations,-full_Target_array[0:],'-s',color='limegreen',
-              label=f'Best Predicted {label}',linewidth=1.5,markersize=4)
+              label=f'Best Observed {label}',linewidth=1.5,markersize=4)
 # Axis Labels
 ax1.set_xlabel('BO Iteration',weight='bold',fontsize=11)
 ax1.set_ylabel('Max. Expected Improvement',weight='bold',fontsize=10,
                color='red')
-ax2.set_ylabel(f'Molecular Weight',weight='bold',fontsize=10, 
+ax2.set_ylabel('Molecular Weight',weight='bold',fontsize=10, 
                color='limegreen')
 ax1.tick_params(axis='y',colors='red')
 ax2.tick_params(axis='y',colors='limegreen')

@@ -1,0 +1,14 @@
+# Python 3.9.24
+
+numpy==1.24.3
+pandas==1.2.4
+matplotlib==3.9.2
+scipy==1.13.1
+scikit-learn==1.6.1
+gpflow==2.10.0
+tensorflow==2.12.1
+tensorflow-probability==0.20.1
+
+# GPflow 2.10.0 imports pkg_resources, which setuptools 82 removed.
+setuptools<82
+

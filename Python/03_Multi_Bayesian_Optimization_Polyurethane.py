@@ -559,8 +559,8 @@ pareto_OH=Y_Domain_OH[pareto_index_observed,0]
 pareto_AV=-Y_Domain_AV[pareto_index_observed,0]
 ax1.scatter(pareto_OH,pareto_AV,c='gold',marker='*',s=140,
             edgecolors='black',label='Observed Pareto condition',zorder=4)
-ax1.set_xlabel('Hydroxyl Value (OH) [Maximize]',weight='bold')
-ax1.set_ylabel('Acid Value (AV) [Minimize]',weight='bold')
+ax1.set_xlabel('Hydroxyl Number (OH) [mg KOH g$^{-1}$]',weight='bold')
+ax1.set_ylabel('Acid Value (AV) [mg KOH g$^{-1}$]',weight='bold')
 ax1.grid(True,linestyle=':',alpha=0.6)
 leg=ax1.legend(loc='upper right',fontsize=8)
 for handle in leg.legend_handles:
@@ -582,7 +582,7 @@ line3=ax2_twin.axhline(true_global_max_OH,color='black',linestyle=':',
                        label='Database maximum')
 ax2.set_xlabel('BO Iteration',weight='bold')
 ax2.set_ylabel('Maximum EHVI',weight='bold',color='red')
-ax2_twin.set_ylabel('Target Value (OH)',weight='bold',
+ax2_twin.set_ylabel('Hydroxyl Number (mg KOH g$^{-1}$)',weight='bold',
                     color='dodgerblue')
 ax2.tick_params(axis='y',colors='red')
 ax2_twin.tick_params(axis='y',colors='dodgerblue')
@@ -603,7 +603,7 @@ line6=ax3_twin.axhline(true_global_min_AV,color='black',linestyle=':',
                        label='Database minimum')
 ax3.set_xlabel('BO Iteration',weight='bold')
 ax3.set_ylabel('Maximum EHVI',weight='bold',color='red')
-ax3_twin.set_ylabel('Target Value (AV)',weight='bold',
+ax3_twin.set_ylabel('Acid Value (mg KOH g$^{-1}$)',weight='bold',
                     color='orange')
 ax3.tick_params(axis='y',colors='red')
 ax3_twin.tick_params(axis='y',colors='orange')

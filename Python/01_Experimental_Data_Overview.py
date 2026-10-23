@@ -206,7 +206,7 @@ T_Nylon=Data_Nylon.iloc[:,1].to_numpy()
 t_Nylon=Data_Nylon.iloc[:,2].to_numpy()
 R_Nylon=Data_Nylon.iloc[:,3].to_numpy()
 # Get molecular weight 
-MW_Nylon=Data_Nylon['Acid Value'].to_numpy()
+MW_Nylon=Data_Nylon['Molecular Weight'].to_numpy()
 # Define the observed Nylon 6 optimum
 indexBest_Nylon=int(MW_Nylon.argmin())
 
