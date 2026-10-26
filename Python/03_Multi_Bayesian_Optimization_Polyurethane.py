@@ -59,8 +59,7 @@ from sklearn import preprocessing
 # =============================================================================
 
 # Path to database folder
-databasesFolderPath=(r'C:\Users\Rafael\Desktop\Polymer_acidolysis\Article'
-                     r'\Databases')
+databasesFolderPath=(r'/path/to/Databases')
 
 # Gaussian-Process (GP) configuration
 gpConfig={'kernel':'RBF',
