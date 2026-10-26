@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-03_Multi_Bayesian_Optimization_Polyurethane_EHVI.py performs sequential
+SI_Bayesian_Optimization_Nylon_Multiple_Starting_Points.py performs sequential
 multi-objective Bayesian optimization over the experimental conditions
-contained in Data_Polyurethane.csv. It uses two Gaussian-process regression
-models and exact two-objective expected hypervolume improvement (EHVI) to
-optimize hydroxyl number (OH) and acid value (AV) simultaneously.
+contained in Data_Polyurethane.csv using three distinct initial conditions. 
+These are selected at approximately the 25th, 50th and 75th percentiles of an 
+equal-weight score combining standardized OH and −AV. It uses two 
+Gaussian-process regression models and exact two-objective expected hypervolume 
+improvement (EHVI) to optimize hydroxyl number (OH) and acid value (AV) 
+simultaneously.
 
 The objectives are:
     - Maximize hydroxyl number (OH)

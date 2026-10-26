@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-02_Bayesian_Optimization_Nylon.py performs sequential Bayesian optimization
-over the experimental conditions contained in Data_Nylon.csv. A Gaussian
-process regression model predicts molecular weight (MW), while the expected
-improvement acquisition function selects the next experiment from the remaining
-experimental candidates.
+SI_Bayesian_Optimization_Nylon_Multiple_Starting_Points.py performs sequential 
+Bayesian optimization over the experimental conditions contained in 
+Data_Nylon.csv using three distinct initial conditions. These are selected
+at approximately the 25th, 50th and 75th percentiles of the negative molecular
+weight (−MW) ranking. A Gaussian process regression model predicts molecular 
+weight (MW), while the expected improvement acquisition function selects the 
+next experiment from the remaining experimental candidates.
 
 The experimental variables are: temperature, reaction time and reactant ratio
 The target property is: molecular weight (MW)
